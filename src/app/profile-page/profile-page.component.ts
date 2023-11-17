@@ -36,7 +36,7 @@ export class ProfilePageComponent implements OnInit {
       this.user.birth_date = this.user.birth_date;
 
       this.fetchApiData.getAllMovies().subscribe((response: any) => {
-        this.favoriteMovies = response.filter((MovieID: { _id: any }) => this.user.favoriteMovies.indexOf(MovieID) >= 0)
+        this.favoriteMovies = response.filter((m: { _id: any }) => this.user.favoriteMovies.indexOf(m._id) >= 0)
       })
     })
   }
