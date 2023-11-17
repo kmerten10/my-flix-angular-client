@@ -80,9 +80,17 @@ export class FetchApiDataService {
     );
   }
 
-  getUser(): Observable<any> {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    return user;
+  getOneUser(): Observable<any> {
+    const username = localStorage.getItem('username');
+    const token = localStorage.getItem('token');
+    return this.http.get(apiUrl + 'users/' + username, {
+      headers: new HttpHeaders({
+        Authorization: 'Bearer ' + token,
+      })
+    }).pipe(
+      map(this.extractResponseData),
+      catchError(this.handleError)
+    );
   }
 
   getFavoriteMovies(username: string): Observable<any> {
@@ -123,14 +131,14 @@ export class FetchApiDataService {
     );
   }
 
-  addFavoriteMovie(movieId: string): Observable<any> {
+  addFavoriteMovie(MovieID: string): Observable<any> {
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-    user.FavoriteMovies.push(movieId);
+    user.favoriteMovies.push(MovieID);
     localStorage.setItem('user', JSON.stringify(user));
 
-    return this.http.put(apiUrl + `users/${user.Username}/${movieId}`, {}, {
+    return this.http.post(apiUrl + `users/${user.username}/movies/${MovieID}`, {}, {
       headers: new HttpHeaders({
         "Content-Type": "application/json",
         Authorization: 'Bearer ' + token,
@@ -141,17 +149,17 @@ export class FetchApiDataService {
     );
   }
 
-  deleteFavoriteMovie(movieId: string): Observable<any> {
+  deleteFavoriteMovie(MovieID: string): Observable<any> {
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-    const index = user.FavoriteMovies.indexOf(movieId);
+    const index = user.favoriteMovies.indexOf(MovieID);
     if (index >= 0) {
-      user.FavoriteMovies.splice(index, 1);
+      user.favoriteMovies.splice(index, 1);
     }
     localStorage.setItem('user', JSON.stringify(user));
 
-    return this.http.delete(apiUrl + `users/${user.Username}/${movieId}`, {
+    return this.http.delete(apiUrl + `users/${user.username}/movies/${MovieID}`, {
       headers: new HttpHeaders({
         Authorization: 'Bearer ' + token,
       })
@@ -161,10 +169,10 @@ export class FetchApiDataService {
     );
   }
 
-  isFavoriteMovie(movieId: string): boolean {
+  isFavoriteMovie(MovieID: string): boolean {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (user) {
-      return user.FavoriteMovies.includes(movieId);
+      return user.favoriteMovies.includes(MovieID);
     }
 
     return false;

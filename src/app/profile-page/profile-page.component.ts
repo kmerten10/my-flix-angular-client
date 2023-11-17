@@ -3,7 +3,6 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { FetchApiDataService } from '../fetch-api-data.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-profile-page',
@@ -30,14 +29,14 @@ export class ProfilePageComponent implements OnInit {
   }
 
   getUser(): void {
-    this.fetchApiData.getUser().subscribe((response: any) => {
+    this.fetchApiData.getOneUser().subscribe((response: any) => {
       this.user = response;
       this.userData.username = this.user.username;
       this.userData.email = this.user.email;
-      this.user.birth_date = formatDate(this.user.birth_date, 'yyyy-MM-dd', 'en-US', 'UTC+0');
+      this.user.birth_date = this.user.birth_date;
 
       this.fetchApiData.getAllMovies().subscribe((response: any) => {
-        this.favoriteMovies = response.filter((m: { _id: any }) => this.user.FavoriteMovies.indexOf(m._id) >= 0)
+        this.favoriteMovies = response.filter((MovieID: { _id: any }) => this.user.favoriteMovies.indexOf(MovieID) >= 0)
       })
     })
   }
